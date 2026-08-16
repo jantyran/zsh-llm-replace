@@ -35,10 +35,34 @@ assert_not_empty "gemini: error message on stderr" "$_gerr_msg"
 
 # ── OpenAI fixtures ──────────────────────────────────────────────
 
+# Request service tier
+typeset -g ZSH_AI_COMMANDS_MODEL='gpt-4.1-mini'
+typeset -g ZSH_AI_COMMANDS_OPENAI_ENDPOINT='https://api.openai.com/v1/responses'
+typeset -g ZSH_AI_COMMANDS_OPENAI_API_KEY='test-key'
+typeset -g ZSH_AI_COMMANDS_OPENAI_FAST=true
+_zaic_build_request_openai "system" "query"
+assert_eq "openai: Fast mode request tier" \
+  "fast" \
+  "$(jq -r '.service_tier' <<< "$_zaic_body")"
+assert_eq "openai: reasoning effort is fixed to none" \
+  "none" \
+  "$(jq -r '.reasoning.effort' <<< "$_zaic_body")"
+
+typeset -g ZSH_AI_COMMANDS_OPENAI_FAST=false
+_zaic_build_request_openai "system" "query"
+assert_eq "openai: standard request tier" \
+  "auto" \
+  "$(jq -r '.service_tier' <<< "$_zaic_body")"
+
 # Clean response
 assert_eq "openai: clean response" \
   "ls -la" \
   "$(_zaic_parse_response_openai "$_fixtures_dir/openai_clean.json")"
+
+# A none-effort response has no leading reasoning item.
+assert_eq "openai: response without reasoning item" \
+  "ls -la" \
+  "$(_zaic_parse_response_openai "$_fixtures_dir/openai_no_reasoning.json")"
 
 # Fenced response
 assert_eq "openai: fenced response has fence markers" \

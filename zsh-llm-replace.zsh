@@ -99,8 +99,11 @@ fi
 (( ! ${+ZSH_AI_COMMANDS_OPENAI_ENDPOINT} )) && \
   typeset -g ZSH_AI_COMMANDS_OPENAI_ENDPOINT='https://api.openai.com/v1/responses'
 
-# OpenAI priority processing (lower, more consistent latency; 2x cost)
-(( ! ${+ZSH_AI_COMMANDS_OPENAI_PRIORITY} )) && typeset -g ZSH_AI_COMMANDS_OPENAI_PRIORITY=true
+# OpenAI Fast mode (lower, more consistent latency; 2x cost). The former
+# PRIORITY name remains a compatibility alias when FAST is not set.
+if (( ! ${+ZSH_AI_COMMANDS_OPENAI_FAST} )); then
+  typeset -g ZSH_AI_COMMANDS_OPENAI_FAST="${ZSH_AI_COMMANDS_OPENAI_PRIORITY:-true}"
+fi
 
 # Other defaults
 (( ! ${+ZSH_AI_COMMANDS_HOTKEY} )) && typeset -g ZSH_AI_COMMANDS_HOTKEY='^o'

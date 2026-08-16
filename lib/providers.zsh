@@ -61,12 +61,13 @@ _zaic_build_request_openai() {
   )
 
   local service_tier="auto"
-  [[ "$ZSH_AI_COMMANDS_OPENAI_PRIORITY" == true ]] && service_tier="priority"
+  [[ "$ZSH_AI_COMMANDS_OPENAI_FAST" == true ]] && service_tier="fast"
 
-  # Reasoning:
+  # Keep the user-facing configuration opinionated for this latency-sensitive use case.
+  # This local remains explicit so the internal policy is easy to benchmark or revise.
   # Supported values are model-dependent and can include: none, minimal, low, medium, high, and xhigh
   # https://developers.openai.com/api/reference/resources/responses/methods/create
-  local reasoning_level="low"
+  local reasoning_level="none"
   _zaic_body=$(
     jq -n \
       --arg model "$ZSH_AI_COMMANDS_MODEL" \
@@ -89,7 +90,14 @@ _zaic_parse_response_openai() {
   local resp_file="$1"
 
   local raw
-  raw="$(jq -r '.output[1].content[0].text // empty' "$resp_file" 2>/dev/null)"
+  raw="$(jq -r '
+    [.output[]?
+      | select(.type == "message")
+      | .content[]?
+      | select(.type == "output_text")
+      | .text]
+    | join("\n")
+  ' "$resp_file" 2>/dev/null)"
 
   if [[ -z "$raw" ]]; then
     local err

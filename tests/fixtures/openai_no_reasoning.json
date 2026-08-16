@@ -1,0 +1,17 @@
+{
+  "id": "resp_test_none",
+  "object": "response",
+  "output": [
+    {
+      "type": "message",
+      "content": [
+        {
+          "type": "output_text",
+          "annotations": [],
+          "text": "ls -la"
+        }
+      ]
+    }
+  ],
+  "usage": { "input_tokens": 100, "output_tokens": 5, "total_tokens": 105 }
+}

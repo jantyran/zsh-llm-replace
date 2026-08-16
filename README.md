@@ -5,7 +5,7 @@ Zsh plugin to integrate LLMs into the shell for quick command generation.
 
 https://github.com/user-attachments/assets/fd6408ed-edf2-407a-812b-2e1fac25698c
 
-_Demo with gpt-4.1-mini's priority tier_
+_Demo with gpt-4.1-mini's Fast mode_
 
 Supports Gemini (default with free credits), OpenAI-compatible APIs (OpenAI, Ollama, LMStudio, etc.), and OpenRouter (one key, hundreds of models including OSS).
 
@@ -72,7 +72,8 @@ export ZSH_AI_COMMANDS_MODEL="LiquidAI/LFM2.5-1.2B-Thinking"
 | `ZSH_AI_COMMANDS_GEMINI_API_KEY` | — | Gemini API key |
 | `ZSH_AI_COMMANDS_OPENAI_API_KEY` | — | OpenAI API key |
 | `ZSH_AI_COMMANDS_OPENAI_ENDPOINT` | `https://api.openai.com/v1/responses` | Custom endpoint (use `/v1/chat/completions` for OpenAI-compatible servers) |
-| `ZSH_AI_COMMANDS_OPENAI_PRIORITY` | `true` | OpenAI priority tier (lower latency, 2x cost) |
+| `ZSH_AI_COMMANDS_OPENAI_FAST` | `true` | OpenAI Fast mode (lower latency, 2x cost) |
+| `ZSH_AI_COMMANDS_OPENAI_PRIORITY` | — | Deprecated compatibility alias for `ZSH_AI_COMMANDS_OPENAI_FAST` |
 | `ZSH_AI_COMMANDS_OPENROUTER_API_KEY` | — | OpenRouter API key |
 | `ZSH_AI_COMMANDS_HOTKEY` | `^o` (Ctrl+O) | Keybinding |
 | `ZSH_AI_COMMANDS_HISTORY` | `false` | Log queries to history |
@@ -94,19 +95,20 @@ zsh tests/run.zsh
 zsh bench.zsh
 ```
 
-Test results with `reasoning: { effort: "low" }` and 2x priority-tier cost, as of 2026/03/18:
+Test results as of 2026/08/16. OpenAI rows use the Responses API and 2x-cost Fast mode. GPT-5.6 reasoning effort is shown in each model label; the plugin itself fixes OpenAI reasoning to `none` without exposing another setting. Quality is the number of generated commands (out of five) that are valid one-line zsh and pass prompt-specific semantic checks.
 ```
-Model                        Latency  Tokens    Cost x1000
-──────────────────────────  ────────  ──────  ────────────
-gemini-3-flash-preview          3.7s      15        $0.186
-gemini-2.5-flash                2.6s      16        $0.124
-gpt-4o                          0.7s      15        $2.848
-gpt-4.1-mini                    0.7s      27        $0.536
-gpt-5-mini                      3.3s     482        $3.717
-gpt-5.4-mini                    1.1s      28        $0.669
-gpt-5.4-nano                    0.9s      32        $0.190
-or:gpt-oss-120b:nitro           0.6s     109        $0.201
-or:qwen3.5-35b-a3b:nitro        1.0s      25        $0.081
+Model                          Latency  Tokens    Cost x1000  Quality
+────────────────────────────  ────────  ──────  ────────────  ───────
+gemini-3-flash-preview            3.3s      15        $0.186      3/5
+gemini-2.5-flash                  2.3s      15        $0.122      4/5
+gpt-4o                            1.1s      14        $2.820      4/5
+gpt-4.1-mini                      1.0s      26        $0.532      5/5
+gpt-5.4-mini                      0.9s      31        $0.691      5/5
+gpt-5.6-sol [none]                1.3s      25        $2.134      5/5
+gpt-5.6-luna [none]               1.1s      28        $0.088      5/5
+gpt-5.6-luna [low]                1.9s     144        $0.228      5/5
+or:gpt-oss-120b:nitro             0.8s     127        $0.214      5/5
+or:qwen3.5-35b-a3b:nitro          0.9s      22        $0.066      5/5
 
 ```
 
