@@ -52,6 +52,7 @@ _summary() {
 
 source "$_root_dir/lib/parse.zsh"
 source "$_root_dir/lib/providers.zsh"
+source "$_root_dir/lib/environment.zsh"
 
 # ── Run test suites ──────────────────────────────────────────────
 
@@ -61,6 +62,10 @@ source "$_test_dir/test_parse.zsh"
 echo
 echo "=== Provider tests ==="
 source "$_test_dir/test_providers.zsh"
+
+echo
+echo "=== Environment tests ==="
+source "$_test_dir/test_environment.zsh"
 
 # ── Summary ──────────────────────────────────────────────────────
 

@@ -22,6 +22,12 @@ Using [zplug](https://github.com/zplug/zplug):
 zplug "m3at/zsh-llm-replace"
 ```
 
+For bash/readline, source the bundled bash variant from `~/.bashrc`:
+
+```sh
+source /home/ubuntu/zsh-llm-replace/bash-llm-replace.bash
+```
+
 ## Configuration
 
 ### Gemini
@@ -63,12 +69,29 @@ export ZSH_AI_COMMANDS_OPENAI_ENDPOINT="http://localhost:11434/v1/chat/completio
 export ZSH_AI_COMMANDS_MODEL="LiquidAI/LFM2.5-1.2B-Thinking"
 ```
 
+### Target shell environment
+
+By default, the plugin detects the host OS with `uname` and asks the model for commands that fit that environment. You can override it when needed:
+
+```sh
+export ZSH_AI_COMMANDS_OS=linux   # Ubuntu/Debian-like Linux
+export ZSH_AI_COMMANDS_OS=macos   # macOS/Darwin
+```
+
+You can also add site-specific context to the system prompt:
+
+```sh
+export ZSH_AI_COMMANDS_ENVIRONMENT="Docker is available; prefer apt-get for package installs."
+```
+
 ### All environment variables
 
 | Variable | Default | Purpose |
 |---|---|---|
 | `ZSH_AI_COMMANDS_PROVIDER` | Auto-detected from which key is set | `gemini`, `openai`, or `openrouter` |
 | `ZSH_AI_COMMANDS_MODEL` | `gemini-3-flash-preview` / `gpt-4.1-mini` / `openai/gpt-oss-120b:nitro` | Model identifier (prefix with `or:` to force OpenRouter) |
+| `ZSH_AI_COMMANDS_OS` | `auto` | Target shell OS: `auto`, `linux`, `ubuntu`, `macos`, or `darwin` |
+| `ZSH_AI_COMMANDS_ENVIRONMENT` | — | Extra environment notes appended to the model prompt |
 | `ZSH_AI_COMMANDS_GEMINI_API_KEY` | — | Gemini API key |
 | `ZSH_AI_COMMANDS_OPENAI_API_KEY` | — | OpenAI API key |
 | `ZSH_AI_COMMANDS_OPENAI_ENDPOINT` | `https://api.openai.com/v1/responses` | Custom endpoint (use `/v1/chat/completions` for OpenAI-compatible servers) |
@@ -81,9 +104,17 @@ export ZSH_AI_COMMANDS_MODEL="LiquidAI/LFM2.5-1.2B-Thinking"
 
 ## Usage
 
+### zsh
+
 1. Type a natural language description in your terminal
 2. Press Ctrl+o (or your configured hotkey)
 3. Accept (enter) or discard (any other key) the generated command
+
+### bash
+
+1. Type a natural language description in your terminal
+2. Press Ctrl+o (or your configured hotkey)
+3. The current readline buffer is replaced with the generated command
 
 ## Testing
 

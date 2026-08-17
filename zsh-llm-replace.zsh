@@ -35,6 +35,7 @@
 
 source "${0:A:h}/lib/parse.zsh"
 source "${0:A:h}/lib/providers.zsh"
+source "${0:A:h}/lib/environment.zsh"
 
 # ── Config resolution ─────────────────────────────────────────────
 
@@ -136,25 +137,7 @@ fzf_ai_commands() {
 
   # ── Build request ──────────────────────────────────────────────
   local sys
-  read -r -d '' sys <<'PROMPT'
-You are an expert sysadmin and shell scripter. Given a task description, output a single shell one-liner.
-
-Environment:
-- Shell: zsh on macOS (Darwin). GNU coreutils are installed.
-- Available beyond the defaults: rg (ripgrep), jq, fzf, fd, sed, awk, perl, curl, git.
-
-Output rules:
-- Print ONLY the bare command. Nothing else.
-- No markdown, no code fences, no backticks, no commentary, no leading/trailing whitespace.
-- The command must be a single logical line. Use pipes, &&, ||, ;, or subshells to chain steps. Never use literal newlines.
-- Quoting: prefer single quotes for fixed strings, double quotes when variable expansion or escapes are needed. Escape carefully inside nested quotes.
-- Prefer sensible defaults, but when you can't, use <placeholder> for values that must be filled in, e.g. <file>, <pattern>, <port>.
-- If you must include commentary, wrap the command in a ``` block so it can be extracted.
-
-Command quality:
-- Prefer simple, robust solutions. Avoid unnecessary subshells or processes.
-- When the task is ambiguous, pick the most common interpretation rather than asking for clarification.
-PROMPT
+  sys="$(_zaic_system_prompt)"
 
   local _zaic_url _zaic_body
   typeset -a _zaic_headers
